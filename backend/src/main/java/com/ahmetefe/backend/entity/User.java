@@ -3,6 +3,9 @@ package com.ahmetefe.backend.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Entity(name = "users")
 public class User {
@@ -22,4 +25,12 @@ public class User {
 
     @Column(length = 100)
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    List<Event> ownEventList = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "participants")
+    List<Event> attendedEvents = new ArrayList<>();
+
+
 }
