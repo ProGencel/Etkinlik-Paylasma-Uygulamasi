@@ -48,7 +48,7 @@ public class SessionFilter implements Filter {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         HttpSession session = request.getSession(false);
-        Object customer = (session != null) ? session.getAttribute("customer") : null;
+        Object customer = (session != null) ? session.getAttribute("user") : null;
 
         // ✅ INFO LOG
         logger.info("""

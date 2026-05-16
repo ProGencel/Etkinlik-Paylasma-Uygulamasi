@@ -1,10 +1,12 @@
 package com.ahmetefe.backend.entity;
 
+import com.ahmetefe.backend.utils.EventCategory;
+import com.ahmetefe.backend.utils.EventState;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,11 +37,12 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User ownerUser;
 
     @ManyToMany
     private List<User> participants = new ArrayList<>();
 
+    @FutureOrPresent
     private LocalDate eventDate;
     private LocalTime eventTime;
 
@@ -62,16 +65,3 @@ public class Event {
 
 }
 
-enum EventState {
-    ACTIVE,
-    STOPPED,
-    ARCHIVE
-}
-
-enum EventCategory {
-    GAMEJAM,
-    MEETING,
-    SPORT,
-    CONCERT,
-    THEATER
-}

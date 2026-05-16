@@ -26,7 +26,7 @@ public class User {
     @Column(length = 100)
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "ownerUser")
     List<Event> ownEventList = new ArrayList<>();
 
     @ManyToMany(mappedBy = "participants")
