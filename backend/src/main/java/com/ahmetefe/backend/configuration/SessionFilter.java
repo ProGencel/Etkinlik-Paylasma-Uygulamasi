@@ -24,7 +24,7 @@ public class SessionFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String urlPath = request.getRequestURI();
-        String[] freeUrls = {"/customer,/kvkk"};
+        String[] freeUrls = {"/user","/kvkk"};
 
         boolean isAuth = true;
 
@@ -95,6 +95,7 @@ public class SessionFilter implements Filter {
                 return;
             }
         }
+        filterChain.doFilter(request,response);
 
     }
 

@@ -5,6 +5,8 @@ import com.ahmetefe.backend.dto.UserRegisterDto;
 import com.ahmetefe.backend.dto.UserResponseDto;
 import com.ahmetefe.backend.entity.User;
 import com.ahmetefe.backend.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
@@ -22,6 +24,7 @@ public class UserService {
 
     final UserRepository userRepository;
     final ModelMapper modelMapper;
+    final HttpServletRequest request;
 
     public ResponseEntity register(UserRegisterDto userRegisterDto)
     {
@@ -54,8 +57,17 @@ public class UserService {
             boolean isPasswordMatch = BCrypt.checkpw(userLoginDto.getPassword(),user.getPassword());
             if(isPasswordMatch)
             {
-                //Session eklenecek
-                return ResponseEntity.ok().body(userLoginDto);
+                /*
+                * Customer nesnesinde hem karmasik sifre oldugu icin hemde ileride gereksiz baska bilgiler barindiracagi icin
+                * sunucunun ramini sisirmemesi adina responseDto yu sessiona ekliyoruz.
+                */
+
+                UserResponseDto userResponseDto = modelMapper.map(user,UserResponseDto.class);
+
+                HttpSession session = request.getSession(true);
+                session.setAttribute("user",userResponseDto);
+
+                return ResponseEntity.ok().body(userResponseDto);
             }
             Map<String,Object> errorMessage = Map.of("success",false,"error message:","Incorrect email or password");
             return ResponseEntity.badRequest().body(errorMessage);
