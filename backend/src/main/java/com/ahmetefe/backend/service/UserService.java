@@ -75,4 +75,16 @@ public class UserService {
         Map<String,Object> errorMessage = Map.of("success",false,"error message:","mail not found");
         return ResponseEntity.badRequest().body(errorMessage);
     }
+
+    public ResponseEntity logout()
+    {
+        if(request.getSession(false) != null)
+        {
+            request.getSession().invalidate();
+            return ResponseEntity.ok().body("Logout successfull");
+
+        }
+
+        return ResponseEntity.badRequest().body("You are not logged in. Please log in first.");
+    }
 }

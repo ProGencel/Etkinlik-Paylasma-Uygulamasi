@@ -29,5 +29,11 @@ public class UserRestController {
         return userService.login(userLoginDto);
     }
 
+    @GetMapping("logout")
+    public ResponseEntity logout()
+    {
+        return userService.logout();
+    }
+
 
 }
