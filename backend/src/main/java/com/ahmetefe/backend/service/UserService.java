@@ -2,6 +2,7 @@ package com.ahmetefe.backend.service;
 
 import com.ahmetefe.backend.dto.UserLoginDto;
 import com.ahmetefe.backend.dto.UserRegisterDto;
+import com.ahmetefe.backend.dto.UserResponseDto;
 import com.ahmetefe.backend.entity.User;
 import com.ahmetefe.backend.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -31,7 +32,10 @@ public class UserService {
             String hashPassword = BCrypt.hashpw(user.getPassword(),BCrypt.gensalt());
             user.setPassword(hashPassword);
             userRepository.save(user);
-            return ResponseEntity.ok().body(user);
+
+            UserResponseDto userResponseDto = modelMapper.map(user,UserResponseDto.class);
+
+            return ResponseEntity.ok().body(userResponseDto);
         }
         else
         {
