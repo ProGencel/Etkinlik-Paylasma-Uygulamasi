@@ -5,6 +5,7 @@ import com.ahmetefe.backend.dto.UserRegisterDto;
 import com.ahmetefe.backend.dto.UserResponseDto;
 import com.ahmetefe.backend.entity.User;
 import com.ahmetefe.backend.repository.UserRepository;
+import com.ahmetefe.backend.utils.AppConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class UserService {
 
     public ResponseEntity register(UserRegisterDto userRegisterDto)
     {
-        Optional<User> userOptional = userRepository.findByMailIgnoreCase(userRegisterDto.getMail());
+        Optional<User> userOptional = userRepository.findByMailEqualsIgnoreCase(userRegisterDto.getMail());
         if(userOptional.isEmpty())
         {
             User user = modelMapper.map(userRegisterDto,User.class);
@@ -49,7 +50,7 @@ public class UserService {
 
     public ResponseEntity login(UserLoginDto userLoginDto)
     {
-        Optional<User> userOptional = userRepository.findByMailIgnoreCase(userLoginDto.getMail());
+        Optional<User> userOptional = userRepository.findByMailEqualsIgnoreCase(userLoginDto.getMail());
 
         if(userOptional.isPresent())
         {
@@ -65,7 +66,7 @@ public class UserService {
                 UserResponseDto userResponseDto = modelMapper.map(user,UserResponseDto.class);
 
                 HttpSession session = request.getSession(true);
-                session.setAttribute("user",userResponseDto);
+                session.setAttribute(AppConstants.USER_SESSION_INFO,userResponseDto.getId());
 
                 return ResponseEntity.ok().body(userResponseDto);
             }

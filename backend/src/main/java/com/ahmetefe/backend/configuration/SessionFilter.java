@@ -1,5 +1,6 @@
 package com.ahmetefe.backend.configuration;
 
+import com.ahmetefe.backend.utils.AppConstants;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,7 +49,7 @@ public class SessionFilter implements Filter {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         HttpSession session = request.getSession(false);
-        Object customer = (session != null) ? session.getAttribute("user") : null;
+        Object userId = (session != null) ? session.getAttribute(AppConstants.USER_SESSION_INFO) : null;
 
         // ✅ INFO LOG
         logger.info("""
@@ -72,12 +73,12 @@ public class SessionFilter implements Filter {
                 referer,
                 userAgent,
                 (session != null ? session.getId() : "No Session"),
-                (customer != null ? customer : "Anonymous")
+                (userId != null ? userId : "Anonymous")
         );
 
         if(isAuth)
         {
-            if(customer == null)
+            if(userId == null)
             {
                 logger.warn("Unauthorized access -> IP: {}, URL: {}", ipAddress, urlPath);
 
