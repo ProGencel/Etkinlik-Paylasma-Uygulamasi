@@ -82,7 +82,6 @@ public class UserService {
         {
             session.invalidate();
             return ResponseEntity.ok().body("Logout successfull");
-
         }
 
         return ResponseEntity.badRequest().body("You are not logged in. Please log in first.");

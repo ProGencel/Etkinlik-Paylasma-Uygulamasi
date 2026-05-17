@@ -4,9 +4,7 @@ import com.ahmetefe.backend.entity.Event;
 import com.ahmetefe.backend.utils.EventCategory;
 import jakarta.validation.constraints.*;
 import lombok.Data;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -14,7 +12,10 @@ import java.time.LocalTime;
  * DTO for {@link Event}
  */
 @Data
-public class EventSaveDto {
+public class EventUpdateDto{
+    @NotNull
+    @Positive
+    private Long id;
     @NotNull
     @Size(min = 3, max = 20)
     @NotEmpty
@@ -32,9 +33,7 @@ public class EventSaveDto {
     String description;
     @NotNull
     EventCategory eventCategory;
-    @NotNull
     @FutureOrPresent
     LocalDate eventDate;
-    @NotNull
     LocalTime eventTime;
 }

@@ -2,6 +2,7 @@ package com.ahmetefe.backend.restController;
 
 import com.ahmetefe.backend.dto.EventResponseDto;
 import com.ahmetefe.backend.dto.EventSaveDto;
+import com.ahmetefe.backend.dto.EventUpdateDto;
 import com.ahmetefe.backend.entity.Event;
 import com.ahmetefe.backend.service.EventService;
 import com.ahmetefe.backend.utils.EventState;
@@ -18,7 +19,7 @@ public class EventRestController {
 
     final EventService eventService;
 
-    @PostMapping("save")
+    @PostMapping("publish")
     public ResponseEntity save(@Valid @RequestBody EventSaveDto eventSaveDto)
     {
         return eventService.save(eventSaveDto);
@@ -37,4 +38,15 @@ public class EventRestController {
         return eventService.joinEvent(eventId);
     }
 
+    @DeleteMapping("delete/{eventId}")
+    public ResponseEntity deleteEvent(@PathVariable Long eventId)
+    {
+        return eventService.deleteEvent(eventId);
+    }
+
+    @PutMapping("update")
+    public ResponseEntity updateEvent(@Valid @RequestBody EventUpdateDto eventUpdateDto)
+    {
+        return eventService.updateEvent(eventUpdateDto);
+    }
 }
