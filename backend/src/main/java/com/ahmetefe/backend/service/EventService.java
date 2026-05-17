@@ -9,6 +9,7 @@ import com.ahmetefe.backend.repository.UserRepository;
 import com.ahmetefe.backend.utils.AppConstants;
 import com.ahmetefe.backend.utils.EventState;
 import jakarta.servlet.http.HttpSession;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
@@ -187,6 +188,64 @@ public class EventService {
         Page<EventResponseDto> eventResponseDtoPage = eventPage.map((element) -> modelMapper.map(element, EventResponseDto.class));
 
         return eventResponseDtoPage;
+    }
+
+    public ResponseEntity changeStateOfEvent(Long eventId,EventState eventState)
+    {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+
+        Long userId = (Long) session.getAttribute(AppConstants.USER_SESSION_INFO);
+        Optional<User> userOptional = userRepository.findByIdEquals(userId);
+
+
+        if(userOptional.isEmpty())
+        {
+            return ResponseEntity.badRequest().body("Please register first");
+        }
+
+        if(eventOptional.isEmpty())
+        {
+            return ResponseEntity.badRequest().body("No events found matching your search");
+        }
+
+        User user = userOptional.get();
+        Event event = eventOptional.get();
+
+        if(!event.getOwnerUser().equals(user))
+        {
+            return ResponseEntity.badRequest().body("You cannot change the state of an event that does not belong to you");
+        }
+
+        if(event.getState().equals(EventState.STOPPED))
+        {
+            return ResponseEntity.badRequest().body("You cannot change the state of a stopped event");
+        }
+
+        if((event.getState().equals(EventState.ACTIVE) && eventState.equals(EventState.ACTIVE)) ||
+                (event.getState().equals(EventState.ARCHIVE) && eventState.equals(EventState.ARCHIVE)))
+        {
+            return ResponseEntity.badRequest().body("The event is already in this state");
+        }
+
+        if(eventState.equals(EventState.ACTIVE))
+        {
+            event.setState(EventState.ACTIVE);
+        }
+
+        if(eventState.equals(EventState.ARCHIVE))
+        {
+            event.setState(EventState.ARCHIVE);
+        }
+
+        if(eventState.equals(EventState.STOPPED))
+        {
+            event.setState(EventState.STOPPED);
+        }
+
+        eventRepository.save(event);
+
+        return ResponseEntity.ok().body("Status updated successfully");
+
     }
 
     private void updateEventFields(Event event, EventUpdateDto dto) {

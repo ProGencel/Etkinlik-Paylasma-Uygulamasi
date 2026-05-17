@@ -3,7 +3,6 @@ package com.ahmetefe.backend.restController;
 import com.ahmetefe.backend.dto.EventResponseDto;
 import com.ahmetefe.backend.dto.EventSaveDto;
 import com.ahmetefe.backend.dto.EventUpdateDto;
-import com.ahmetefe.backend.entity.Event;
 import com.ahmetefe.backend.service.EventService;
 import com.ahmetefe.backend.utils.EventState;
 import jakarta.validation.Valid;
@@ -56,5 +55,12 @@ public class EventRestController {
                                          @RequestParam (defaultValue = "desc") String date)
     {
         return eventService.search(q, page, date);
+    }
+
+    @PostMapping("changeState/{eventId}")
+    public ResponseEntity archive(@PathVariable Long eventId,
+                                  @RequestParam EventState eventState)
+    {
+        return eventService.changeStateOfEvent(eventId,eventState);
     }
 }
