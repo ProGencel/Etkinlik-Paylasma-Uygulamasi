@@ -19,4 +19,6 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     Page<Event> findByStateEquals(EventState state,
                                   Pageable pageable);
+
+    Page<Event> findByOwnerUser_IdEquals(Long id, Pageable pageable);
 }

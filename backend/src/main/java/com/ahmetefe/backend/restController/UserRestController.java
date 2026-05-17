@@ -1,11 +1,13 @@
 package com.ahmetefe.backend.restController;
 
+import com.ahmetefe.backend.dto.EventResponseDto;
 import com.ahmetefe.backend.dto.UserLoginDto;
 import com.ahmetefe.backend.dto.UserRegisterDto;
 import com.ahmetefe.backend.repository.UserRepository;
 import com.ahmetefe.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +35,12 @@ public class UserRestController {
     public ResponseEntity logout()
     {
         return userService.logout();
+    }
+
+    @GetMapping("list")
+    public Page<EventResponseDto> listOwnEvents(@RequestParam (defaultValue = "0")int page)
+    {
+        return userService.listOwnEvents(page);
     }
 
 

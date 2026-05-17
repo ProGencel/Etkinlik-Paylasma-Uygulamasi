@@ -37,5 +37,4 @@ public class EventRestController {
         return eventService.joinEvent(eventId);
     }
 
-
 }

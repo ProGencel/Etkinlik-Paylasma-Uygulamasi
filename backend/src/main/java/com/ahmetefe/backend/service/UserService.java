@@ -1,9 +1,9 @@
 package com.ahmetefe.backend.service;
 
-import com.ahmetefe.backend.dto.UserLoginDto;
-import com.ahmetefe.backend.dto.UserRegisterDto;
-import com.ahmetefe.backend.dto.UserResponseDto;
+import com.ahmetefe.backend.dto.*;
+import com.ahmetefe.backend.entity.Event;
 import com.ahmetefe.backend.entity.User;
+import com.ahmetefe.backend.repository.EventRepository;
 import com.ahmetefe.backend.repository.UserRepository;
 import com.ahmetefe.backend.utils.AppConstants;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ public class UserService {
     final UserRepository userRepository;
     final ModelMapper modelMapper;
     final HttpServletRequest request;
+    final HttpSession session;
+    private final EventRepository eventRepository;
 
     public ResponseEntity register(UserRegisterDto userRegisterDto)
     {
@@ -58,11 +62,6 @@ public class UserService {
             boolean isPasswordMatch = BCrypt.checkpw(userLoginDto.getPassword(),user.getPassword());
             if(isPasswordMatch)
             {
-                /*
-                * Customer nesnesinde hem karmasik sifre oldugu icin hemde ileride gereksiz baska bilgiler barindiracagi icin
-                * sunucunun ramini sisirmemesi adina responseDto yu sessiona ekliyoruz.
-                */
-
                 UserResponseDto userResponseDto = modelMapper.map(user,UserResponseDto.class);
 
                 HttpSession session = request.getSession(true);
@@ -79,13 +78,25 @@ public class UserService {
 
     public ResponseEntity logout()
     {
-        if(request.getSession(false) != null)
+        if(session.getAttribute(AppConstants.USER_SESSION_INFO) != null)
         {
-            request.getSession().invalidate();
+            session.invalidate();
             return ResponseEntity.ok().body("Logout successfull");
 
         }
 
         return ResponseEntity.badRequest().body("You are not logged in. Please log in first.");
+    }
+
+    public Page<EventResponseDto> listOwnEvents(int page)
+    {
+        Long userId = (Long)session.getAttribute(AppConstants.USER_SESSION_INFO);
+        Pageable pageable = Pageable.ofSize(10).withPage(page);
+
+
+        Page<Event> eventPage = eventRepository.findByOwnerUser_IdEquals(userId,pageable);
+        Page<EventResponseDto> eventResponseDtoPage = eventPage.map(event -> modelMapper.map(event, EventResponseDto.class));
+
+        return eventResponseDtoPage;
     }
 }
