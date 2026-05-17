@@ -6,12 +6,15 @@ import com.ahmetefe.backend.entity.User;
 import com.ahmetefe.backend.repository.EventRepository;
 import com.ahmetefe.backend.repository.UserRepository;
 import com.ahmetefe.backend.utils.AppConstants;
+import com.ahmetefe.backend.utils.EventState;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import com.ahmetefe.backend.dto.UserResponseDto;
 
 import java.util.Optional;
 
@@ -27,7 +30,6 @@ public class EventService {
     public ResponseEntity save(EventSaveDto eventSaveDto)
     {
         Event event = modelMapper.map(eventSaveDto,Event.class);
-        EventResponseDto eventResponseDto = modelMapper.map(event,EventResponseDto.class);
 
         Long userId = (Long) session.getAttribute(AppConstants.USER_SESSION_INFO);
         Optional<User> userOptional = userRepository.findByIdEquals(userId);
@@ -36,15 +38,27 @@ public class EventService {
         if(userOptional.isPresent())
         {
             event.setOwnerUser(userOptional.get());
-            eventRepository.save(event);
+            event = eventRepository.save(event);
+
+            EventResponseDto eventResponseDto = modelMapper.map(event,EventResponseDto.class);
 
             UserOwnerDto userOwnerDto = modelMapper.map(userOptional.get(),UserOwnerDto.class);
-            eventResponseDto.setUserOwnerDto(userOwnerDto);
+            eventResponseDto.setOwnerUser(userOwnerDto);
 
             return ResponseEntity.ok().body(eventResponseDto);
         }
         return ResponseEntity.badRequest().body("Please login first");
+    }
 
+    @Cacheable(value = "eventList", key = "#eventState + '-' + #page")
+    public Page<EventResponseDto> listEvents(EventState eventState, int page)
+    {
+        Pageable pageable = Pageable.ofSize(AppConstants.EVENTS_PER_PAGE).withPage(page);
+        Page<Event> eventPage = eventRepository.findByStateEquals(eventState,pageable);
+
+        Page<EventResponseDto> eventResponseDtoPage = eventPage.map(event -> modelMapper.map(event,EventResponseDto.class));
+
+        return eventResponseDtoPage;
     }
 
 }

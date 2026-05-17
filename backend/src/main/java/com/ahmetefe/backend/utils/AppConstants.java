@@ -5,5 +5,6 @@ public class AppConstants {
     private AppConstants(){}
 
     public static final String USER_SESSION_INFO = "userId";
+    public static final int EVENTS_PER_PAGE = 10;
 
 }

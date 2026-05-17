@@ -3,9 +3,7 @@ package com.ahmetefe.backend.dto;
 import com.ahmetefe.backend.utils.EventCategory;
 import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Data;
-import lombok.Value;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -22,5 +20,5 @@ public class EventResponseDto{
     LocalDate eventDate;
     LocalTime eventTime;
 
-    UserOwnerDto userOwnerDto;
+    UserOwnerDto OwnerUser;
 }
