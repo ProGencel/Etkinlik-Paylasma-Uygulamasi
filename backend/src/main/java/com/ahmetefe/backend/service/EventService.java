@@ -32,11 +32,14 @@ public class EventService {
         Long userId = (Long) session.getAttribute(AppConstants.USER_SESSION_INFO);
         Optional<User> userOptional = userRepository.findByIdEquals(userId);
 
+
         if(userOptional.isPresent())
         {
+            event.setOwnerUser(userOptional.get());
+            eventRepository.save(event);
+
             UserOwnerDto userOwnerDto = modelMapper.map(userOptional.get(),UserOwnerDto.class);
             eventResponseDto.setUserOwnerDto(userOwnerDto);
-            eventRepository.save(event);
 
             return ResponseEntity.ok().body(eventResponseDto);
         }
