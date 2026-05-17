@@ -31,4 +31,11 @@ public class EventRestController {
          return eventService.listEvents(eventState,page);
     }
 
+    @PostMapping("join/{eventId}")
+    public ResponseEntity joinEvent(@PathVariable Long eventId)
+    {
+        return eventService.joinEvent(eventId);
+    }
+
+
 }

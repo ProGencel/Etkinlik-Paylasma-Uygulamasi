@@ -15,7 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -59,6 +61,23 @@ public class EventService {
         Page<EventResponseDto> eventResponseDtoPage = eventPage.map(event -> modelMapper.map(event,EventResponseDto.class));
 
         return eventResponseDtoPage;
+    }
+
+    public ResponseEntity joinEvent(long eventId)
+    {
+        Optional<Event> eventOptional = eventRepository.findById(eventId);
+        Event event = eventOptional.get();
+
+        List<User> eventParticipants = event.getParticipants();
+        Long userId = (Long)session.getAttribute(AppConstants.USER_SESSION_INFO);
+
+        Optional<User> user = userRepository.findByIdEquals(userId);
+
+        eventParticipants.add(user.get());
+
+        EventResponseDto eventResponseDto = modelMapper.map(event,EventResponseDto.class);
+
+        return ResponseEntity.ok().body(eventResponseDto);
     }
 
 }

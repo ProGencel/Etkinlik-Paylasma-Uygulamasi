@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 /**
  * DTO for {@link com.ahmetefe.backend.entity.Event}
@@ -21,4 +22,5 @@ public class EventResponseDto{
     LocalTime eventTime;
 
     UserOwnerDto OwnerUser;
+    List<UserOwnerDto> participants;
 }

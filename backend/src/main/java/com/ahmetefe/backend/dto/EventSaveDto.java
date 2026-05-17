@@ -3,6 +3,7 @@ package com.ahmetefe.backend.dto;
 import com.ahmetefe.backend.entity.Event;
 import com.ahmetefe.backend.utils.EventCategory;
 import jakarta.validation.constraints.*;
+import lombok.Data;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -12,8 +13,8 @@ import java.time.LocalTime;
 /**
  * DTO for {@link Event}
  */
-@Value
-public class EventSaveDto implements Serializable {
+@Data
+public class EventSaveDto {
     @NotNull
     @Size(min = 3, max = 20)
     @NotEmpty
