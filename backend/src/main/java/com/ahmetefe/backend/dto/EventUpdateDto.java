@@ -17,7 +17,7 @@ public class EventUpdateDto{
     @Positive
     private Long id;
     @NotNull
-    @Size(min = 3, max = 20)
+    @Size(min = 3, max = 50)
     @NotEmpty
     @NotBlank
     String title;

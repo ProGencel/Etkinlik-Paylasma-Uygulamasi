@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +55,7 @@ public class EventService {
         return ResponseEntity.badRequest().body("Please login first");
     }
 
-    @Cacheable(value = "eventList", key = "#eventState + '-' + #page")
+    @Cacheable(value = "eventList", key = "#eventState.name() + '-' + #page")
     public Page<EventResponseDto> listEvents(EventState eventState, int page)
     {
         Pageable pageable = Pageable.ofSize(AppConstants.EVENTS_PER_PAGE).withPage(page);
@@ -175,8 +177,20 @@ public class EventService {
         return ResponseEntity.ok().body(message);
     }
 
+    public Page<EventResponseDto> search(String q, int page, String date)
+    {
+        Sort sort = Sort.by(date.equals("desc") ? Sort.Direction.DESC : Sort.Direction.ASC, "eventDate");
+        Pageable pageable = PageRequest.of(page,AppConstants.EVENTS_PER_PAGE,sort);
+        Page<Event> eventPage = eventRepository.findByTitleContainsIgnoreCaseOrPlaceContainsIgnoreCaseOrDescriptionContainsIgnoreCase
+                (q,q,q,pageable, EventState.ACTIVE);
+
+        Page<EventResponseDto> eventResponseDtoPage = eventPage.map((element) -> modelMapper.map(element, EventResponseDto.class));
+
+        return eventResponseDtoPage;
+    }
+
     private void updateEventFields(Event event, EventUpdateDto dto) {
-        
+        //Model mapper ile yapıldığında User_Id null oluyordu bu yüzden kendi fonksiyonumu yazdım
         event.setTitle(dto.getTitle());
         event.setPlace(dto.getPlace());
         event.setDescription(dto.getDescription());

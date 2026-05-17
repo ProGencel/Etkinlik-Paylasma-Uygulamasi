@@ -49,4 +49,12 @@ public class EventRestController {
     {
         return eventService.updateEvent(eventUpdateDto);
     }
+
+    @GetMapping("search")
+    public Page<EventResponseDto> search(@RequestParam (defaultValue = "") String q,
+                                         @RequestParam (defaultValue = "0") int page,
+                                         @RequestParam (defaultValue = "desc") String date)
+    {
+        return eventService.search(q, page, date);
+    }
 }

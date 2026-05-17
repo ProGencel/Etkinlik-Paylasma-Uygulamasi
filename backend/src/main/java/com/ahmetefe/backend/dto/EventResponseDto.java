@@ -1,6 +1,8 @@
 package com.ahmetefe.backend.dto;
 
 import com.ahmetefe.backend.utils.EventCategory;
+import com.ahmetefe.backend.utils.EventState;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Data;
 
@@ -24,4 +26,5 @@ public class EventResponseDto{
 
     UserOwnerDto OwnerUser;
     List<UserOwnerDto> participants;
+    EventState eventState;
 }

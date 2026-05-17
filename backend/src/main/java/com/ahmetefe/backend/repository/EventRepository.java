@@ -21,4 +21,14 @@ public interface EventRepository extends JpaRepository<Event,Long> {
                                   Pageable pageable);
 
     Page<Event> findByOwnerUser_IdEquals(Long id, Pageable pageable);
+
+    Page<Event> findByTitleContainsIgnoreCaseOrPlaceContainsIgnoreCaseOrDescriptionContainsIgnoreCase(String title, String place, String description, Pageable pageable, EventState state);
+
+    @Query("SELECT e FROM Event e WHERE e.ownerUser.id = :userId " +
+            "ORDER BY CASE e.state " +
+            "  WHEN 'ACTIVE' THEN 1 " +
+            "  WHEN 'ARCHIVE' THEN 2 " +
+            "  WHEN 'STOPPED' THEN 3 " +
+            "  ELSE 4 END ASC")
+    Page<Event> findByOwnerUserIdWithCustomOrder(@Param("userId") Long userId, Pageable pageable);
 }

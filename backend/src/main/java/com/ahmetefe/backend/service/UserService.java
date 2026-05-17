@@ -93,7 +93,7 @@ public class UserService {
         Pageable pageable = Pageable.ofSize(10).withPage(page);
 
 
-        Page<Event> eventPage = eventRepository.findByOwnerUser_IdEquals(userId,pageable);
+        Page<Event> eventPage = eventRepository.findByOwnerUserIdWithCustomOrder(userId,pageable);
         Page<EventResponseDto> eventResponseDtoPage = eventPage.map(event -> modelMapper.map(event, EventResponseDto.class));
 
         return eventResponseDtoPage;
