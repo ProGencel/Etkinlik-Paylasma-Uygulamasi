@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Optional;
@@ -66,14 +65,31 @@ public class EventService {
     public ResponseEntity joinEvent(long eventId)
     {
         Optional<Event> eventOptional = eventRepository.findById(eventId);
+        if(eventOptional.isEmpty())
+        {
+            return ResponseEntity.badRequest().body("The event you are trying to join does not exist.");
+        }
+
         Event event = eventOptional.get();
 
         List<User> eventParticipants = event.getParticipants();
         Long userId = (Long)session.getAttribute(AppConstants.USER_SESSION_INFO);
 
-        Optional<User> user = userRepository.findByIdEquals(userId);
+        Optional<User> userOptional = userRepository.findByIdEquals(userId);
+        if(userOptional.isEmpty())
+        {
+            return ResponseEntity.badRequest().body("Please login first");
+        }
 
-        eventParticipants.add(user.get());
+
+        if(eventParticipants.contains(userOptional.get()))
+        {
+            return ResponseEntity.badRequest().body("You have already joined this event");
+        }
+
+        eventParticipants.add(userOptional.get());
+
+        eventRepository.save(event);
 
         EventResponseDto eventResponseDto = modelMapper.map(event,EventResponseDto.class);
 

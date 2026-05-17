@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Data
 public class EventResponseDto{
+    Long id;
     String title;
     String place;
     String description;
